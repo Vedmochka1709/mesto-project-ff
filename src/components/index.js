@@ -1,13 +1,13 @@
 import '../pages/index.css';
 import {initialCards} from './cards.js';
 import {openPopup, closePopup} from './modal.js';
-import {creatCard, removeCard} from './card.js';
+import {creatCard, removeCard, likeCard, openImgCard} from './card.js';
 
 //код, который отвечает за отображение шести карточек при открытии страницы.
 const placesList = document.querySelector('.places__list');
 
 initialCards.forEach(item => {                         // Вывели карточки на страницу
-    placesList.append(creatCard(item, removeCard)); 
+    placesList.append(creatCard(item, removeCard, likeCard, openImgCard)); 
 })
 
 // Закрытие всех попапов через кнопку
@@ -41,16 +41,6 @@ profileButton.addEventListener('click', () => {
     nameInput.value = profileTitle.textContent;
     jobInput.value = profileDescription.textContent;
 })
-
-//работа с модальным окном изображения карточки.
-const cardPopup = document.querySelector('.popup_type_image');
-const cardsImages = document.querySelectorAll('.card__image');
-
-cardsImages.forEach(function (cardsImage) {                        // открывается пустым
-    cardsImage.addEventListener('click', (evt) => {
-        openPopup(cardPopup)
-    })
-});
 
 // Редактирование имени и информации о себе
 function handleFormSubmit(evt) {
