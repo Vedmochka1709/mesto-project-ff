@@ -3,6 +3,8 @@ import {initialCards} from './cards.js';
 import {openPopup, closePopup, closePopupByOverlay} from './modal.js';
 import {creatCard, removeCard, likeCard} from './card.js';
 
+const paramCreatCard = {removeCard, likeCard, openImgCard};     // все функции карточки
+
 const formElements = document.querySelectorAll('.popup__form');    // все попапы
 
 const placesList = document.querySelector('.places__list');     // коробка для карточек
@@ -38,9 +40,8 @@ function addCardFormSubmit(evt) {
     const newCard = {};
     newCard.name = cardNameInput.value;
     newCard.link = urlInput.value;
-        
-    placesList.prepend(creatCard(newCard, removeCard, likeCard, openImgCard)); 
-    
+    placesList.prepend(creatCard(newCard, paramCreatCard));    
+
     document.forms["new-place"].reset()
 
     closePopup(newCardPopup)
@@ -55,8 +56,8 @@ function openImgCard(evt) {
 }
 
 //код, который отвечает за отображение шести карточек при открытии страницы.
-initialCards.forEach(item => {                         // Вывели карточки на страницу
-    placesList.append(creatCard(item, removeCard, likeCard, openImgCard)); 
+initialCards.forEach( (item) => {                         // Вывели карточки на страницу
+    placesList.append(creatCard(item, paramCreatCard))
 })
 
 // Закрытие всех попапов через кнопку
@@ -82,8 +83,18 @@ profileButton.addEventListener('click', () => {
     jobInput.value = profileDescription.textContent;
 })
 
-// Сохранение изменений при  нажатии на Сохранить   
-formElements.forEach(function (formElement) {    // следит за событием “submit” - «отправка»
+// Сохранение изменений при  нажатии на Сохранить 
+newCardPopup.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    addCardFormSubmit(evt)
+})
+
+profilePopup.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    editProfileFormSubmit(evt)
+})
+
+/*formElements.forEach(function (formElement) {    // следит за событием “submit” - «отправка»
     formElement.addEventListener('submit', (evt) => {
         evt.preventDefault();
         if (evt.target.closest('.popup_type_edit')) {  // выбирает форму
@@ -92,4 +103,4 @@ formElements.forEach(function (formElement) {    // следит за событ
             addCardFormSubmit(evt)
         }
     })
-});
+});*/
