@@ -1,18 +1,65 @@
 import '../pages/index.css';
 import {initialCards} from './cards.js';
-import {openPopup, closePopup} from './modal.js';
-import {creatCard, removeCard, likeCard, openImgCard} from './card.js';
+import {openPopup, closePopup, closePopupByOverlay} from './modal.js';
+import {creatCard, removeCard, likeCard} from './card.js';
+
+const formElements = document.querySelectorAll('.popup__form');    // все попапы
+
+const placesList = document.querySelector('.places__list');     // коробка для карточек
+const closeButtons = document.querySelectorAll('.popup__close');    // кнопка закрытия у попапов
+
+const newCardPopup = document.querySelector('.popup_type_new-card');  // попап создания новой карточки
+const cardAddButton = document.querySelector('.profile__add-button');  // кнопка создания новой карточки
+const cardNameInput = document.querySelector('.popup__input_type_card-name');  //  поле попап подписи изображения 
+const urlInput = document.querySelector('.popup__input_type_url');         //  поле попап ссылки на изображение 
+
+const profilePopup = document.querySelector('.popup_type_edit');                 // попап профиля
+const profileButton = document.querySelector('.profile__edit-button');           // кнопка редактирования профиля
+const nameInput = document.querySelector('.popup__input_type_name');            //  поле имени попапа профиля
+const jobInput = document.querySelector('.popup__input_type_description');      //  поле занятия попапа профиля
+const profileTitle = document.querySelector('.profile__title');                 //  Имя профиля на странице
+const profileDescription = document.querySelector('.profile__description');      // занятие профиля на странице
+
+const cardPopup = document.querySelector('.popup_type_image');    // попап для изображений
+const imgCardPopup = cardPopup.querySelector('.popup__image');    // изображение в попапе для изображений
+const textCardPopup = cardPopup.querySelector('.popup__caption');  // текст в попапе для изображений
+
+// Функция редактирования имени и информации о себе
+function editProfileFormSubmit(evt) {
+    evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
+    profileTitle.textContent = nameInput.value;
+    profileDescription.textContent = jobInput.value;
+    closePopup(profilePopup)
+}
+
+// Функция внесения пользователем новой карточки
+function addCardFormSubmit(evt) {
+    evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
+    const newCard = {};
+    newCard.name = cardNameInput.value;
+    newCard.link = urlInput.value;
+        
+    placesList.prepend(creatCard(newCard, removeCard, likeCard, openImgCard)); 
+    
+    document.forms["new-place"].reset()
+
+    closePopup(newCardPopup)
+}
+
+// Функция открытия изображения карточки
+function openImgCard(evt) {
+    imgCardPopup.src = evt.target.src;
+    imgCardPopup.alt = evt.target.alt;
+    textCardPopup.textContent = evt.target.alt; 
+    openPopup(cardPopup)
+}
 
 //код, который отвечает за отображение шести карточек при открытии страницы.
-const placesList = document.querySelector('.places__list');
-
 initialCards.forEach(item => {                         // Вывели карточки на страницу
     placesList.append(creatCard(item, removeCard, likeCard, openImgCard)); 
 })
 
 // Закрытие всех попапов через кнопку
-const closeButtons = document.querySelectorAll('.popup__close');
-
 closeButtons.forEach(function (closeButton) {
     closeButton.addEventListener('click', (evt) => {
         const eventTarget = evt.target;        // button, на который мы кликнули
@@ -20,61 +67,27 @@ closeButtons.forEach(function (closeButton) {
     })
 });
 
-//работа с модальным окном добавления карточки
-const newCardPopup = document.querySelector('.popup_type_new-card');
-const cardAddButton = document.querySelector('.profile__add-button');
+// Закрытие всех попапов через Оверлей
+document.addEventListener('click', closePopupByOverlay);
 
+//работа с модальным окном добавления карточки
 cardAddButton.addEventListener('click', () => {
     openPopup(newCardPopup)
 })
 
 //работа с модальным окном профиля
-const profilePopup = document.querySelector('.popup_type_edit');                 // попап профиля
-const profileButton = document.querySelector('.profile__edit-button');           // кнопка редактирования профиля
-const nameInput = document.querySelector('.popup__input_type_name');            //  поля формы в DOM
-const jobInput = document.querySelector('.popup__input_type_description');      //  поля формы в DOM
-const profileTitle = document.querySelector('.profile__title');                 //  Имя профиля
-const profileDescription = document.querySelector('.profile__description');      // занятие профиля
-
 profileButton.addEventListener('click', () => {
     openPopup(profilePopup)
     nameInput.value = profileTitle.textContent;
     jobInput.value = profileDescription.textContent;
 })
 
-// Редактирование имени и информации о себе
-function handleFormSubmit(evt) {
-    evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
-    profileTitle.textContent = nameInput.value;
-    profileDescription.textContent = jobInput.value;
-    closePopup(evt.target.closest('.popup'))
-}
-
-// Функция внесения пользователем новой карточки
-function addCardFormSubmit(evt) {
-    evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
-    const cardNameInput = document.querySelector('.popup__input_type_card-name');  //  поля формы 
-    const urlInput = document.querySelector('.popup__input_type_url');              //  поля формы 
-    const newCard = {};
-    newCard.name = cardNameInput.value;
-    newCard.link = urlInput.value;
-        
-    placesList.prepend(creatCard(newCard, removeCard)); 
-    
-    cardNameInput.value = '';
-    urlInput.value = '';
-
-    closePopup(evt.target.closest('.popup'))
-}
-
-// Сохранение изменений при  нажатии на Сохранить
-const formElements = document.querySelectorAll('.popup__form'); 
-      
+// Сохранение изменений при  нажатии на Сохранить   
 formElements.forEach(function (formElement) {    // следит за событием “submit” - «отправка»
     formElement.addEventListener('submit', (evt) => {
         evt.preventDefault();
         if (evt.target.closest('.popup_type_edit')) {  // выбирает форму
-            handleFormSubmit(evt)
+            editProfileFormSubmit(evt)
         } else {
             addCardFormSubmit(evt)
         }
