@@ -5,7 +5,10 @@ import {creatCard, removeCard, likeCard} from './card.js';
 
 const paramCreatCard = {removeCard, likeCard, openImgCard};     // все функции карточки
 
-const formElements = document.querySelectorAll('.popup__form');    // все попапы
+//const formElements = document.querySelectorAll('.popup__form');    // все попапы
+
+const popapFormNewCard = document.forms["new-place"];     // форма попапа добавления карточки
+const popapFormProfile = document.forms["edit-profile"];    // форма попапа профиля
 
 const placesList = document.querySelector('.places__list');     // коробка для карточек
 const closeButtons = document.querySelectorAll('.popup__close');    // кнопка закрытия у попапов
@@ -42,18 +45,26 @@ function addCardFormSubmit(evt) {
     newCard.link = urlInput.value;
     placesList.prepend(creatCard(newCard, paramCreatCard));    
 
-    document.forms["new-place"].reset()
+    popapFormNewCard.reset()
 
     closePopup(newCardPopup)
 }
 
 // Функция открытия изображения карточки
-function openImgCard(evt) {
+/*function openImgCard(evt) {
     imgCardPopup.src = evt.target.src;
     imgCardPopup.alt = evt.target.alt;
     textCardPopup.textContent = evt.target.alt; 
     openPopup(cardPopup)
+}*/
+
+function openImgCard(name, url) {
+    imgCardPopup.src = url;
+    imgCardPopup.alt = name;
+    textCardPopup.textContent = name; 
+    openPopup(cardPopup)
 }
+//element.addEventListener('click', () => doSomething(data));
 
 //код, который отвечает за отображение шести карточек при открытии страницы.
 initialCards.forEach( (item) => {                         // Вывели карточки на страницу
@@ -69,7 +80,9 @@ closeButtons.forEach(function (closeButton) {
 });
 
 // Закрытие всех попапов через Оверлей
-document.addEventListener('click', closePopupByOverlay);
+newCardPopup.addEventListener('click', closePopupByOverlay);
+profilePopup.addEventListener('click', closePopupByOverlay);
+cardPopup.addEventListener('click', closePopupByOverlay);
 
 //работа с модальным окном добавления карточки
 cardAddButton.addEventListener('click', () => {
@@ -84,23 +97,12 @@ profileButton.addEventListener('click', () => {
 })
 
 // Сохранение изменений при  нажатии на Сохранить 
-newCardPopup.addEventListener('submit', (evt) => {
+popapFormNewCard.addEventListener('submit', (evt) => {
     evt.preventDefault();
     addCardFormSubmit(evt)
 })
 
-profilePopup.addEventListener('submit', (evt) => {
+popapFormProfile.addEventListener('submit', (evt) => {
     evt.preventDefault();
     editProfileFormSubmit(evt)
 })
-
-/*formElements.forEach(function (formElement) {    // следит за событием “submit” - «отправка»
-    formElement.addEventListener('submit', (evt) => {
-        evt.preventDefault();
-        if (evt.target.closest('.popup_type_edit')) {  // выбирает форму
-            editProfileFormSubmit(evt)
-        } else {
-            addCardFormSubmit(evt)
-        }
-    })
-});*/
