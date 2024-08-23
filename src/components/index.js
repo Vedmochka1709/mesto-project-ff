@@ -50,21 +50,12 @@ function addCardFormSubmit(evt) {
     closePopup(newCardPopup)
 }
 
-// Функция открытия изображения карточки
-/*function openImgCard(evt) {
-    imgCardPopup.src = evt.target.src;
-    imgCardPopup.alt = evt.target.alt;
-    textCardPopup.textContent = evt.target.alt; 
-    openPopup(cardPopup)
-}*/
-
 function openImgCard(name, url) {
     imgCardPopup.src = url;
     imgCardPopup.alt = name;
     textCardPopup.textContent = name; 
     openPopup(cardPopup)
 }
-//element.addEventListener('click', () => doSomething(data));
 
 //код, который отвечает за отображение шести карточек при открытии страницы.
 initialCards.forEach( (item) => {                         // Вывели карточки на страницу
