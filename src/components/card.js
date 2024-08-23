@@ -36,7 +36,9 @@ function creatCard(obj, paramCreatCard) {
     //работа с модальным окном изображения карточки.
     const cardsImages = document.querySelectorAll('.card__image');
     cardsImages.forEach(function (cardsImage) {                       
-        cardsImage.addEventListener('click', paramCreatCard.openImgCard)
+        cardsImage.addEventListener('click', () => {
+            paramCreatCard.openImgCard (cardsImage.alt, cardsImage.src)
+        })
     });
 
     return cardElement;
