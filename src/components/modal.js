@@ -1,8 +1,7 @@
-//const popup = document.querySelector('.popup');
- 
 //функция открытия модального окна 
 function openPopup(evt) {                   
     evt.classList.add('popup_is-opened');
+    //evt.querySelector('.popup__button').disabled = true; 
     document.addEventListener('keydown', closePopupByEscape);
 }
 
@@ -10,6 +9,7 @@ function openPopup(evt) {
 function closePopup(evt) {                   
     evt.classList.remove('popup_is-opened');
     document.removeEventListener('keydown', closePopupByEscape);
+    //clearValidation (evt)  
 }
 
 //функция-обработчик события нажатия Esc

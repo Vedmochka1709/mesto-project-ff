@@ -1,7 +1,31 @@
-.card__description {
+/*.card__description {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: #fff;
   padding: 25px 20px;
+}*/
+
+.card__description {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 22px 20px;
+}
+
+.card__like {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+}
+
+.card__like-count {
+  font-weight: 400;
+  font-size: 13px;
+  text-align: center;
+  color: #000;
+  padding-block-start: 3px;
+  margin: 0;
 }
