@@ -3,12 +3,13 @@ import { initialCards } from './cards.js';
 import { openPopup, closePopup, closePopupByOverlay } from './modal.js';
 import { creatCard, removeCard, likeCard } from './card.js';
 import { enableValidation, clearValidation } from './validation.js';
-import { getMeProfileServer, getCardsServer, editProfileServer, addCardServer, deleteCardServer} from './api.js';
+import { getMeProfileServer, getCardsServer, editProfileServer, addCardServer, deleteCardServer, editAvatarServer } from './api.js';
 
-const paramCreatCard = { removeCard, likeCard, openImgCard, deleteCardServer};     // все функции карточки
+const paramCreatCard = { removeCard, likeCard, openImgCard, deleteCardServer };     // все функции карточки
 
 const popapFormNewCard = document.forms["new-place"];     // форма попапа добавления карточки
 const popapFormProfile = document.forms["edit-profile"];    // форма попапа профиля
+const popapFormAvatar = document.forms["new-avatar"];    // форма попапа аватара
 
 const placesList = document.querySelector('.places__list');     // коробка для карточек
 const likeCount = document.querySelector('.card__like-count');   // счётчик лайков
@@ -29,6 +30,10 @@ const profileDescription = document.querySelector('.profile__description');     
 const profileImage = document.querySelector('.profile__image');         // фото профиля
 export let myId = ''
 
+const avatarPopup = document.querySelector('.popup_type_new-avatar');                 // попап аватара
+const avatar = document.querySelector('.profile__image');           // кнопка редактирования аватара
+const urlInputAvatar = document.querySelector('.popup__input_url_avatar');         //  поле попап ссылки на новый аватар 
+
 const cardPopup = document.querySelector('.popup_type_image');    // попап для изображений
 const imgCardPopup = cardPopup.querySelector('.popup__image');    // изображение в попапе для изображений
 const textCardPopup = cardPopup.querySelector('.popup__caption');  // текст в попапе для изображений
@@ -42,20 +47,32 @@ const errorResponse = (err) => {
     console.log(err);
 }
 
+// Функция изменения кнопки при загрузке
+function changeButtonName(popup, name) {
+    popup.querySelector('.popup__button').textContent = name;
+    console.log(popup.querySelector('.popup__button').textContent)
+}
+
 // Функция редактирования имени и информации о себе
 function editProfileFormSubmit(evt) {
     evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
+    changeButtonName(profilePopup, 'Сохранение...')
     profileTitle.textContent = nameInput.value;
     profileDescription.textContent = jobInput.value;
     closePopup(profilePopup)
     clearValidation(evt)
     editProfileServer(profileTitle, profileDescription)
+        .catch(errorResponse)
+        .finally(() => {
+            changeButtonName(profilePopup, 'Сохранить')
+        });
+
 }
 
 // Функция внесения новой карточки
 function addCardFormSubmit(evt) {
     evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
-
+    changeButtonName(newCardPopup, 'Сохранение...')
     newCard.name = cardNameInput.value;
     newCard.link = urlInput.value;
     newCard.likes = '';
@@ -64,9 +81,33 @@ function addCardFormSubmit(evt) {
         .then((newCard) => {
             placesList.prepend(creatCard(newCard, paramCreatCard));
         })
+        .catch(errorResponse)
+        .finally(() => {
+            changeButtonName(newCardPopup, 'Сохранить')
+        });
 
     popapFormNewCard.reset()
     closePopup(newCardPopup)
+
+}
+
+// Функция обновления аватара
+function addAvatarSubmit(evt) {
+    evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
+    changeButtonName(avatarPopup, 'Сохранение...')
+    const newUrlAvatar = urlInputAvatar.value
+    editAvatarServer(newUrlAvatar)
+        .then((data) => {
+            avatar.setAttribute('style', `background-image: url(${data.avatar})`);
+            console.log(data)
+            closePopup(avatarPopup);
+        })
+        .catch(errorResponse)
+        .finally(() => {
+            changeButtonName(avatarPopup, 'Сохранить')
+        });
+
+    popapFormAvatar.reset()
 }
 
 // Функция открытия попапа карточки
@@ -91,6 +132,7 @@ closeButtons.forEach(function (closeButton) {
 newCardPopup.addEventListener('click', closePopupByOverlay);
 profilePopup.addEventListener('click', closePopupByOverlay);
 cardPopup.addEventListener('click', closePopupByOverlay);
+avatarPopup.addEventListener('click', closePopupByOverlay);
 
 //работа с модальным окном добавления карточки
 cardAddButton.addEventListener('click', () => {
@@ -104,6 +146,11 @@ profileButton.addEventListener('click', () => {
     jobInput.value = profileDescription.textContent;
 })
 
+//работа с изменением аватара
+avatar.addEventListener('click', () => {
+    openPopup(avatarPopup)
+})
+
 // Сохранение изменений при  нажатии на Сохранить 
 popapFormNewCard.addEventListener('submit', (evt) => {
     evt.preventDefault();
@@ -113,6 +160,11 @@ popapFormNewCard.addEventListener('submit', (evt) => {
 popapFormProfile.addEventListener('submit', (evt) => {
     evt.preventDefault();
     editProfileFormSubmit(evt)
+})
+
+popapFormAvatar.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    addAvatarSubmit(evt)
 })
 
 enableValidation(); // Вызовем функцию проверки валидности
@@ -125,9 +177,8 @@ Promise.all(promises)
         profileImage.style.backgroundImage = `url("${data[0].avatar}")`;  // Картинка меняется? или `url(${result.avatar})`
         myId = data[0]._id
         data[1].forEach((item) => {                         // Вывели карточки на страницу
-            placesList.append(creatCard(item, paramCreatCard))     
+            placesList.append(creatCard(item, paramCreatCard))
         })
         console.log(myId)
     })
     .catch(errorResponse)
-    

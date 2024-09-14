@@ -47,7 +47,18 @@ function editProfileServer(profileTitle, profileDescription) {
         body: JSON.stringify({
             name: profileTitle.textContent,
             about: profileDescription.textContent,
-            //avatar: 
+        })
+    })
+    .then(handleResponse)
+}
+
+//смена аватара
+function editAvatarServer(newUrlAvatar) {
+    return fetch(`${config.baseUrl}/users/me/avatar`, {  
+        method: 'PATCH',
+        headers: config.headers,
+        body: JSON.stringify({
+            avatar: newUrlAvatar
         })
     })
     .then(handleResponse)
@@ -85,4 +96,15 @@ function deleteLikeServer (cardId) {
         .then(handleResponse)
 }
 
-export {getMeProfileServer, getCardsServer, deleteCardServer, editProfileServer, addCardServer, addLikeServer, deleteLikeServer}
+export {getMeProfileServer, getCardsServer, deleteCardServer, editProfileServer, addCardServer, addLikeServer, deleteLikeServer, editAvatarServer}
+
+//доделать
+
+/*Опционально, если хотите потренироваться, можете проверить, что это именно URL на изображение,
+ и он действительный. Для этого вам потребуется сделать запрос с методом HEAD по этому 
+ адресу и проверить статус ответа и mime-тип в заголовках.*/
+
+
+ /*Попап удаления карточки
+ Он должен открываться по клику на иконку удаления:
+ https://www.figma.com/file/PSdQFRHoxXJFs2FH8IXViF/JavaScript.-Sprint-9?node-id=109%3A150 */

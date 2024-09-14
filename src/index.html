@@ -14,7 +14,7 @@
   </header>
   <main class="content">
     <section class="profile page__section">     
-      <div class="profile__image" style="background-image: url('<%=require('./images/avatar.jpg')%>')"></div>
+      <div class="profile__image"></div>  
       <div class="profile__info">
         <h1 class="profile__title"></h1>
         <button class="profile__edit-button" type="button"></button>
@@ -50,6 +50,23 @@
           required minlength="2" maxlength="200" 
           pattern="^[a-zA-Zа-яёА-ЯЁ\s\-]+" data-error-message="Разрешены только латинские и кириллические буквы, знаки дефиса и пробелы.">
         <span class="description-error  popup__input-error"></span>
+        <button type="submit" class="button popup__button">Сохранить</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="popup popup_type_new-avatar popup_is-animated">
+    <div class="popup__content">
+      <button type="button" class="popup__close"></button>
+      <h3 class="popup__title">Обновить аватар</h3>
+      <form class="popup__form" name="new-avatar" novalidate>   
+        <input 
+          type="url" name="link_avatar" id="link_avatar" 
+          class="popup__input popup__input_url_avatar" 
+          placeholder="Ссылка на новый аватар" 
+          required
+          >
+        <span class="link_avatar-error popup__input-error"></span>
         <button type="submit" class="button popup__button">Сохранить</button>
       </form>
     </div>
@@ -92,12 +109,6 @@
   <li class="places__item card" data-card-id="">
     <img class="card__image" src="" alt="" />
     <button type="button" class="card__delete-button"></button>
-    
-
-
-
-
-
     <div class="card__description">
       <h2 class="card__title">
       </h2>
@@ -106,27 +117,8 @@
         <p class="card__like-count"></p>
       </div>
     </div>
-
-
-
-
-
-
-
-
-
   </li>
 </template>
-<!--<template id="card-template">
-  <li class="places__item card">
-    <img class="card__image" src="" alt="" />
-    <button type="button" class="card__delete-button"></button>
-    <div class="card__description">
-      <h2 class="card__title">
-      </h2>
-      <button type="button" class="card__like-button"></button>
-    </div>
-  </li>
-</template>-->
+
 </body>
 </html>
