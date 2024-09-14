@@ -24,8 +24,8 @@ function creatCard(obj, paramCreatCard) {
 
     const likeButton = cardElement.querySelector('.card__like-button');  // кнопка сердечко
 
-     // отображение лайка при загрузке
-    const checkLikeCard = obj.likes.some((like) => {            
+    // отображение лайка при загрузке
+    const checkLikeCard = obj.likes.some((like) => {
         return like._id.includes(myId)
     })
     if (checkLikeCard) {

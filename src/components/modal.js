@@ -1,12 +1,12 @@
 //функция открытия модального окна 
-function openPopup(evt) {                   
+function openPopup(evt) {
     evt.classList.add('popup_is-opened');
     //evt.querySelector('.popup__button').disabled = true; 
     document.addEventListener('keydown', closePopupByEscape);
 }
 
 //функция закрытия модального окна 
-function closePopup(evt) {                   
+function closePopup(evt) {
     evt.classList.remove('popup_is-opened');
     document.removeEventListener('keydown', closePopupByEscape);
     //clearValidation (evt)  
@@ -20,10 +20,10 @@ function closePopupByEscape(evt) {
 }
 
 //функция-обработчик события клика по оверлею
-function closePopupByOverlay (evt) {
+function closePopupByOverlay(evt) {
     if (evt.target.classList.contains('popup_is-opened')) {
-      closePopup(evt.target);
+        closePopup(evt.target);
     }
 };
 
-export {openPopup, closePopup, closePopupByOverlay}
+export { openPopup, closePopup, closePopupByOverlay }

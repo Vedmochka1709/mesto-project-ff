@@ -29,7 +29,7 @@ const isValid = (formElement, inputElement) => {
 };
 
 // Проверяем на валидность все инпуты одной формы, ищет невалидное
-const hasInvalidInput = (inputList) => {      
+const hasInvalidInput = (inputList) => {
     return inputList.some((inputElement) => {  // Если поле не валидно, колбэк вернёт true
         return !inputElement.validity.valid;
     })
@@ -63,19 +63,19 @@ const setEventListeners = (formElement) => {
 const enableValidation = () => {
     const formList = Array.from(document.querySelectorAll('.popup__form'));  // все формы
 
-    formList.forEach((formElement) => {      
+    formList.forEach((formElement) => {
         setEventListeners(formElement);
     });
 };
 
 // Функция очистки ошибок
-function clearValidation () {
-    document.querySelectorAll('.popup__input-error').forEach ((errorElement) => {
+function clearValidation() {
+    document.querySelectorAll('.popup__input-error').forEach((errorElement) => {
         errorElement.textContent = '';
     })
-    document.querySelectorAll('.popup__input').forEach ((inputElement) => {
+    document.querySelectorAll('.popup__input').forEach((inputElement) => {
         inputElement.classList.remove('popup__input_type_error');
     })
 }
 
-export {enableValidation, clearValidation}
+export { enableValidation, clearValidation }
