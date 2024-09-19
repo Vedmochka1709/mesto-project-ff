@@ -19,7 +19,7 @@
   cursor: pointer;
 }
 
-.popup__button:disabled {     /*неактивная кнопка*/
+.popup__button_disabled {     /*неактивная кнопка*/
   border: 1px solid #000;
   border-radius: 2px;
   border-color: #000;

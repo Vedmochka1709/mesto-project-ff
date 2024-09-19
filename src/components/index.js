@@ -1,5 +1,5 @@
 import '../pages/index.css';
-import { initialCards } from './cards.js';
+/*import { initialCards } from './cards.js';*/
 import { openPopup, closePopup, closePopupByOverlay } from './modal.js';
 import { creatCard, removeCard, likeCard } from './card.js';
 import { enableValidation, clearValidation } from './validation.js';
@@ -12,7 +12,7 @@ const popapFormProfile = document.forms["edit-profile"];    // форма поп
 const popapFormAvatar = document.forms["new-avatar"];    // форма попапа аватара
 
 const placesList = document.querySelector('.places__list');     // коробка для карточек
-const likeCount = document.querySelector('.card__like-count');   // счётчик лайков
+/*const likeCount = document.querySelector('.card__like-count');   // счётчик лайков*/
 
 const closeButtons = document.querySelectorAll('.popup__close');    // кнопка закрытия у попапов
 
@@ -42,29 +42,37 @@ const newCard = {};   //   массив для новой карточки
 
 const promises = [getMeProfileServer(), getCardsServer()]  // промисы, которые должны вместе загрузиться
 
+const validationConfig = {                  // классы для валидации
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_disabled',
+    inputErrorClass: 'popup__input_type_error',
+    errorClass: 'popup__input-error_active'
+};
+
 // постоянный catch 
 const errorResponse = (err) => {
     console.log(err);
 }
 
 // Функция изменения кнопки при загрузке
-function changeButtonName(popup, name) {
-    popup.querySelector('.popup__button').textContent = name;
-    console.log(popup.querySelector('.popup__button').textContent)
+function changeButtonName(popup, name, config) {
+    popup.querySelector(config.submitButtonSelector).textContent = name;
 }
 
 // Функция редактирования имени и информации о себе
 function editProfileFormSubmit(evt) {
     evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
-    changeButtonName(profilePopup, 'Сохранение...')
+    changeButtonName(profilePopup, 'Сохранение...', validationConfig)
     profileTitle.textContent = nameInput.value;
     profileDescription.textContent = jobInput.value;
     closePopup(profilePopup)
-    clearValidation(evt)
+    clearValidation(popapFormProfile, validationConfig)
     editProfileServer(profileTitle, profileDescription)
         .catch(errorResponse)
         .finally(() => {
-            changeButtonName(profilePopup, 'Сохранить')
+            changeButtonName(profilePopup, 'Сохранить', validationConfig)
         });
 
 }
@@ -112,6 +120,7 @@ function addAvatarSubmit(evt) {
 
 // Функция открытия попапа карточки
 function openImgCard(name, url) {
+    enableValidation(validationConfig);
     imgCardPopup.src = url;
     imgCardPopup.alt = name;
     textCardPopup.textContent = name;
@@ -123,10 +132,29 @@ closeButtons.forEach(function (closeButton) {
     closeButton.addEventListener('click', (evt) => {
         const eventTarget = evt.target;        // button, на который мы кликнули
         closePopup(eventTarget.closest('.popup'))
-        popapFormNewCard.reset()
-        clearValidation()
+        let form = eventTarget.closest('.popup').querySelector('.popup__form')
+        form.reset()
+        clearValidation(form, validationConfig)
     })
 });
+
+/*// Закрытие попапов через кнопку
+newCardPopup.querySelector('.popup__close').addEventListener('click', (evt)=>{
+    const eventTarget = evt.target;
+    closePopup(newCardPopup);
+    popapFormNewCard.reset();
+    clearValidation(popapFormNewCard, validationConfig);
+});
+
+profilePopup.querySelector('.popup__close').addEventListener('click', ()=>{
+    closePopup(profilePopup);
+    popapFormProfile.reset();
+    clearValidation(popapFormProfile, validationConfig);
+    //enableValidation(validationConfig);
+});
+*/
+
+
 
 // Закрытие всех попапов через Оверлей
 newCardPopup.addEventListener('click', closePopupByOverlay);
@@ -167,7 +195,8 @@ popapFormAvatar.addEventListener('submit', (evt) => {
     addAvatarSubmit(evt)
 })
 
-enableValidation(); // Вызовем функцию проверки валидности
+// Вызовем функцию проверки валидности
+enableValidation(validationConfig);
 
 Promise.all(promises)
     .then((data) => {
