@@ -26,7 +26,7 @@ function creatCard(obj, paramCreatCard) {
 
     resetButton.addEventListener('click', (evt) => {
         deleteCardServer(cardElement.dataset.cardId)
-            .then (paramCreatCard.removeCard(evt))
+            .then(paramCreatCard.removeCard(evt))
             .catch(errorResponse)
     })
 

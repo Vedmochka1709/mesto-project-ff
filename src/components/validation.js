@@ -61,7 +61,7 @@ const setEventListeners = (formElement, config) => {
 };
 
 // Проверяем все формы на валидность
-function enableValidation (config) {
+function enableValidation(config) {
     const formList = Array.from(document.querySelectorAll(config.formSelector));  // все формы
 
     formList.forEach((formElement) => {
@@ -77,7 +77,7 @@ function clearValidation(form, config) {
     toggleButtonState(inputList, submitButton, config);
 
     inputList.forEach((inputElement) => {
-        hideInputError (form, inputElement, config)
+        hideInputError(form, inputElement, config)
     })
 }
 
