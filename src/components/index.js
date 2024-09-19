@@ -1,7 +1,6 @@
 import '../pages/index.css';
-/*import { initialCards } from './cards.js';*/
 import { openPopup, closePopup, closePopupByOverlay } from './modal.js';
-import { creatCard, removeCard, likeCard } from './card.js';
+import { creatCard, removeCard, likeCard, errorResponse } from './card.js';
 import { enableValidation, clearValidation } from './validation.js';
 import { getMeProfileServer, getCardsServer, editProfileServer, addCardServer, deleteCardServer, editAvatarServer } from './api.js';
 
@@ -12,7 +11,6 @@ const popapFormProfile = document.forms["edit-profile"];    // форма поп
 const popapFormAvatar = document.forms["new-avatar"];    // форма попапа аватара
 
 const placesList = document.querySelector('.places__list');     // коробка для карточек
-/*const likeCount = document.querySelector('.card__like-count');   // счётчик лайков*/
 
 const closeButtons = document.querySelectorAll('.popup__close');    // кнопка закрытия у попапов
 
@@ -51,11 +49,6 @@ const validationConfig = {                  // классы для валида�
     errorClass: 'popup__input-error_active'
 };
 
-// постоянный catch 
-const errorResponse = (err) => {
-    console.log(err);
-}
-
 // Функция изменения кнопки при загрузке
 function changeButtonName(popup, name, config) {
     popup.querySelector(config.submitButtonSelector).textContent = name;
@@ -67,9 +60,11 @@ function editProfileFormSubmit(evt) {
     changeButtonName(profilePopup, 'Сохранение...', validationConfig)
     profileTitle.textContent = nameInput.value;
     profileDescription.textContent = jobInput.value;
-    closePopup(profilePopup)
-    clearValidation(popapFormProfile, validationConfig)
     editProfileServer(profileTitle, profileDescription)
+        .then(() => {
+            closePopup(profilePopup)
+            clearValidation(popapFormProfile, validationConfig)
+        })
         .catch(errorResponse)
         .finally(() => {
             changeButtonName(profilePopup, 'Сохранить', validationConfig)
@@ -80,7 +75,7 @@ function editProfileFormSubmit(evt) {
 // Функция внесения новой карточки
 function addCardFormSubmit(evt) {
     evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
-    changeButtonName(newCardPopup, 'Сохранение...')
+    changeButtonName(newCardPopup, 'Сохранение...', validationConfig)
     newCard.name = cardNameInput.value;
     newCard.link = urlInput.value;
     newCard.likes = '';
@@ -88,39 +83,35 @@ function addCardFormSubmit(evt) {
     addCardServer(newCard)
         .then((newCard) => {
             placesList.prepend(creatCard(newCard, paramCreatCard));
+            closePopup(newCardPopup);
+            popapFormNewCard.reset()
         })
         .catch(errorResponse)
         .finally(() => {
-            changeButtonName(newCardPopup, 'Сохранить')
+            changeButtonName(newCardPopup, 'Сохранить', validationConfig)
         });
-
-    popapFormNewCard.reset()
-    closePopup(newCardPopup)
-
 }
 
 // Функция обновления аватара
 function addAvatarSubmit(evt) {
     evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
-    changeButtonName(avatarPopup, 'Сохранение...')
+    changeButtonName(avatarPopup, 'Сохранение...', validationConfig)
     const newUrlAvatar = urlInputAvatar.value
     editAvatarServer(newUrlAvatar)
         .then((data) => {
             avatar.setAttribute('style', `background-image: url(${data.avatar})`);
             console.log(data)
             closePopup(avatarPopup);
+            popapFormAvatar.reset()
         })
         .catch(errorResponse)
         .finally(() => {
-            changeButtonName(avatarPopup, 'Сохранить')
+            changeButtonName(avatarPopup, 'Сохранить', validationConfig)
         });
-
-    popapFormAvatar.reset()
 }
 
 // Функция открытия попапа карточки
 function openImgCard(name, url) {
-    enableValidation(validationConfig);
     imgCardPopup.src = url;
     imgCardPopup.alt = name;
     textCardPopup.textContent = name;
@@ -132,29 +123,8 @@ closeButtons.forEach(function (closeButton) {
     closeButton.addEventListener('click', (evt) => {
         const eventTarget = evt.target;        // button, на который мы кликнули
         closePopup(eventTarget.closest('.popup'))
-        let form = eventTarget.closest('.popup').querySelector('.popup__form')
-        form.reset()
-        clearValidation(form, validationConfig)
     })
 });
-
-/*// Закрытие попапов через кнопку
-newCardPopup.querySelector('.popup__close').addEventListener('click', (evt)=>{
-    const eventTarget = evt.target;
-    closePopup(newCardPopup);
-    popapFormNewCard.reset();
-    clearValidation(popapFormNewCard, validationConfig);
-});
-
-profilePopup.querySelector('.popup__close').addEventListener('click', ()=>{
-    closePopup(profilePopup);
-    popapFormProfile.reset();
-    clearValidation(popapFormProfile, validationConfig);
-    //enableValidation(validationConfig);
-});
-*/
-
-
 
 // Закрытие всех попапов через Оверлей
 newCardPopup.addEventListener('click', closePopupByOverlay);
@@ -164,7 +134,9 @@ avatarPopup.addEventListener('click', closePopupByOverlay);
 
 //работа с модальным окном добавления карточки
 cardAddButton.addEventListener('click', () => {
+    popapFormNewCard.reset()
     openPopup(newCardPopup)
+    clearValidation(popapFormNewCard, validationConfig)
 })
 
 //работа с модальным окном профиля
@@ -172,11 +144,14 @@ profileButton.addEventListener('click', () => {
     openPopup(profilePopup)
     nameInput.value = profileTitle.textContent;
     jobInput.value = profileDescription.textContent;
+    clearValidation(popapFormProfile, validationConfig)
 })
 
 //работа с изменением аватара
 avatar.addEventListener('click', () => {
-    openPopup(avatarPopup)
+    popapFormAvatar.reset()
+    openPopup(avatarPopup);
+    clearValidation(popapFormAvatar, validationConfig)
 })
 
 // Сохранение изменений при  нажатии на Сохранить 
@@ -199,15 +174,13 @@ popapFormAvatar.addEventListener('submit', (evt) => {
 enableValidation(validationConfig);
 
 Promise.all(promises)
-    .then((data) => {
-        console.log(data); // ["Первый промис", "Второй промис"] 
-        profileTitle.textContent = data[0].name;                           // Запрос данных пользователя
-        profileDescription.textContent = data[0].about;
-        profileImage.style.backgroundImage = `url("${data[0].avatar}")`;  // Картинка меняется? или `url(${result.avatar})`
-        myId = data[0]._id
-        data[1].forEach((item) => {                         // Вывели карточки на страницу
+    .then(([MeProfileServer, CardsServer]) => {
+        profileTitle.textContent = MeProfileServer.name;                           // Запрос данных пользователя
+        profileDescription.textContent = MeProfileServer.about;
+        profileImage.style.backgroundImage = `url("${MeProfileServer.avatar}")`;  // Картинка меняется? или `url(${result.avatar})`
+        myId = MeProfileServer._id
+        CardsServer.forEach((item) => {                         // Вывели карточки на страницу
             placesList.append(creatCard(item, paramCreatCard))
         })
-        console.log(myId)
     })
     .catch(errorResponse)

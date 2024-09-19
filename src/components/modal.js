@@ -9,7 +9,6 @@ function openPopup(evt) {
 function closePopup(evt) {
     evt.classList.remove('popup_is-opened');
     document.removeEventListener('keydown', closePopupByEscape);
-    //clearValidation (evt)  
 }
 
 //функция-обработчик события нажатия Esc

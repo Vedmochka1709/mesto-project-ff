@@ -7,8 +7,8 @@ const showInputError = (formElement, inputElement, errorMessage, config) => {
 };
 
 // Скрываем собщение об ошибке
-const hideInputError = (formElement, inputElement, config) => {
-    const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+const hideInputError = (form, inputElement, config) => {
+    const errorElement = form.querySelector(`.${inputElement.id}-error`);
     inputElement.classList.remove(config.inputErrorClass);
     errorElement.classList.remove(config.errorClass);
     errorElement.textContent = '';
@@ -70,36 +70,15 @@ function enableValidation (config) {
 };
 
 // Функция очистки ошибок
-/*function clearValidation(config) {
-    document.querySelectorAll('.popup__input-error').forEach((errorElement) => {
-        errorElement.textContent = '';
-    })
-    document.querySelectorAll(config.inputSelector).forEach((inputElement) => {
-        inputElement.classList.remove(config.inputErrorClass);
-    })
-}*/
 function clearValidation(form, config) {
     const inputList = Array.from(form.querySelectorAll(config.inputSelector));
     const submitButton = form.querySelector(config.submitButtonSelector);
 
     toggleButtonState(inputList, submitButton, config);
 
-    inputList.forEach((input) => {
-        input.classList.remove(config.inputErrorClass);
-        const inputError = form.querySelector(`.${input.id}-error`);
-
-        inputError.classList.remove(config.errorClass);
-        inputError.textContent = '';
+    inputList.forEach((inputElement) => {
+        hideInputError (form, inputElement, config)
     })
 }
 
-
-/*enableValidation({
-    formSelector: '.popup__form',
-    inputSelector: '.popup__input',
-    submitButtonSelector: '.popup__button',
-    inactiveButtonClass: 'popup__button_disabled',
-    inputErrorClass: 'popup__input_type_error',
-    errorClass: 'popup__input-error_active'
-  });*/
 export { enableValidation, clearValidation }

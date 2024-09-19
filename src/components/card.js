@@ -1,25 +1,33 @@
 import { myId } from './index.js';
 import { deleteCardServer, addLikeServer, deleteLikeServer } from './api.js';
 
+// постоянный catch 
+const errorResponse = (err) => {
+    console.log(err);
+}
+
 // Функция создания карточки
 function creatCard(obj, paramCreatCard) {
     const cardTemplate = document.querySelector('#card-template').content;
     const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true);   // скопировали template
+    const resetButton = cardElement.querySelector('.card__delete-button');     //  кнопка удаления
+    const likeCount = cardElement.querySelector('.card__like-count');  // счётчик лайков
+
     cardElement.querySelector('.card__image').src = obj.link;
     cardElement.querySelector('.card__image').alt = obj.name;
     cardElement.querySelector('.card__title').textContent = obj.name;
-    cardElement.querySelector('.card__like-count').textContent = obj.likes.length;
+    likeCount.textContent = obj.likes.length;
 
-    const resetButton = cardElement.querySelector('.card__delete-button');     //  кнопка удаления
     cardElement.dataset.cardId = obj._id;                                  // задали id карточке
 
     if (obj.owner._id !== myId) {                 // кнопка только на своих карточках
-        cardElement.querySelector('.card__delete-button').remove()
+        resetButton.remove()
     }
 
     resetButton.addEventListener('click', (evt) => {
-        paramCreatCard.removeCard(evt);
         deleteCardServer(cardElement.dataset.cardId)
+            .then (paramCreatCard.removeCard(evt))
+            .catch(errorResponse)
     })
 
     const likeButton = cardElement.querySelector('.card__like-button');  // кнопка сердечко
@@ -32,8 +40,8 @@ function creatCard(obj, paramCreatCard) {
         likeButton.classList.add('card__like-button_is-active')
     }
 
-    likeButton.addEventListener('click', (evt) => {
-        paramCreatCard.likeCard(evt);
+    likeButton.addEventListener('click', (likeButton) => {
+        paramCreatCard.likeCard(likeButton, likeCount);
     })
 
     //работа с модальным окном изображения карточки.
@@ -53,33 +61,25 @@ function removeCard(evt) {
 }
 
 //  Функция лайка карточки
-function likeCard(evt) {
-    const card = evt.target.closest('.card');
-    const likeCount = card.querySelector('.card__like-count');
+function likeCard(likeButton, likeCount) {
+    const card = likeButton.target.closest('.card');
 
-    if (!evt.target.classList.contains('card__like-button_is-active')) {
+    if (!likeButton.target.classList.contains('card__like-button_is-active')) {
         addLikeServer(card.dataset.cardId)
             .then((data) => {
                 likeCount.textContent = data.likes.length;
-                evt.target.classList.add('card__like-button_is-active');
+                likeButton.target.classList.add('card__like-button_is-active');
             })
-            .catch((err) => {
-                console.logr(err);
-            })
+            .catch(errorResponse)
     }
     else {
         deleteLikeServer(card.dataset.cardId)
             .then((data) => {
                 likeCount.textContent = data.likes.length;
-                evt.target.classList.remove('card__like-button_is-active');
+                likeButton.target.classList.remove('card__like-button_is-active');
             })
-            .catch((err) => {
-                console.log(err);
-            })
+            .catch(errorResponse)
     }
 }
 
-
-
-
-export { creatCard, removeCard, likeCard }
+export { creatCard, removeCard, likeCard, errorResponse }
