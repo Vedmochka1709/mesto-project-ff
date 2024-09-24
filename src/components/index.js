@@ -58,10 +58,10 @@ function changeButtonName(popup, name, config) {
 function editProfileFormSubmit(evt) {
     evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
     changeButtonName(profilePopup, 'Сохранение...', validationConfig)
-    profileTitle.textContent = nameInput.value;
-    profileDescription.textContent = jobInput.value;
-    editProfileServer(profileTitle, profileDescription)
-        .then(() => {
+    editProfileServer(nameInput, jobInput)
+        .then((data) => {
+            profileTitle.textContent = data.name;
+            profileDescription.textContent = data.about;
             closePopup(profilePopup)
             clearValidation(popapFormProfile, validationConfig)
         })

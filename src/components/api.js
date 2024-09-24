@@ -41,13 +41,13 @@ function deleteCardServer(cardId) {
 }
 
 // Отправка на сервер данных Профиля
-function editProfileServer(profileTitle, profileDescription) {
+function editProfileServer(nameInput, jobInput) {
     return fetch(`${config.baseUrl}/users/me`, {
         method: 'PATCH',
         headers: config.headers,
         body: JSON.stringify({
-            name: profileTitle.textContent,
-            about: profileDescription.textContent,
+            name: nameInput.value,
+            about: jobInput.value,
         })
     })
         .then(handleResponse)
